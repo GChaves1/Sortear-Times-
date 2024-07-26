@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sortear Times</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .input-container, .name-list, .result-container {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-container button:hover {
+            background-color: #0056b3;
+        }
+        .name-list h2, .result-container h2 {
+            margin-top: 0;
+        }
+        .name-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .name-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .name-list button {
+            border: none;
+            background-color: #dc3545;
+            color: #fff;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .name-list button:hover {
+            background-color: #c82333;
+        }
+        .result-container .team {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sortear Times</h1>
+    <div class="input-container">
+        <input type="text" id="nomeInput" placeholder="Adicionar nome">
+        <button onclick="adicionarNome()">Adicionar</button>
+    </div>
+    <div class="name-list">
+        <h2>Lista de Nomes</h2>
+        <ul id="nomeLista"></ul>
+    </div>
+    <button onclick="sortearTimes()" style="background-color: #28a745; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Sortear</button>
+    <div id="result" class="result-container"></div>
+
+    <script>
+        let nomes = [
+            "Victor", "Gabriel", "Joao", "Weslei", "Fabrício", "Ruiz", 
+            "Lucas", "Matheus", "Caio", "Pedro/nosso estagiário", 
+            "Guga", "Guilherme", "Diego", "Rafael", "Ivan", "Dyogo", 
+            "Duh", "Pedro"
+        ];
+
+        function adicionarNome() {
+            const nomeInput = document.getElementById('nomeInput');
+            const nome = nomeInput.value.trim();
+            if (nome) {
+                nomes.push(nome);
+                nomeInput.value = '';
+                atualizarListaNomes();
+            }
+        }
+
+        function removerNome(index) {
+            nomes.splice(index, 1);
+            atualizarListaNomes();
+        }
+
+        function atualizarListaNomes() {
+            const nomeLista = document.getElementById('nomeLista');
+            nomeLista.innerHTML = '';
+            nomes.forEach((nome, index) => {
+                const li = document.createElement('li');
+                li.textContent = nome;
+                const button = document.createElement('button');
+                button.textContent = 'Remover';
+                button.onclick = () => removerNome(index);
+                li.appendChild(button);
+                nomeLista.appendChild(li);
+            });
+        }
+
+        function sortearTimes() {
+            // Cria uma cópia da lista de nomes para embaralhar e distribuir
+            const shuffledNomes = [...nomes].sort(() => Math.random() - 0.5);
+            const times = {};
+            let timeIndex = 0;
+            const tamanhoTime = 5;
+
+            while (shuffledNomes.length) {
+                const timeNome = `Time${String.fromCharCode(65 + timeIndex)}`;
+                if (!times[timeNome]) {
+                    times[timeNome] = [];
+                }
+                for (let i = 0; i < tamanhoTime && shuffledNomes.length; i++) {
+                    times[timeNome].push(shuffledNomes.pop());
+                }
+                timeIndex++;
+            }
+
+            exibirTimes(times);
+        }
+
+        function exibirTimes(times) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '';
+
+            for (const [time, membros] of Object.entries(times)) {
+                const teamDiv = document.createElement('div');
+                teamDiv.classList.add('team');
+                teamDiv.innerHTML = `<h2>${time}</h2><p>${membros.join(', ')}</p>`;
+                resultDiv.appendChild(teamDiv);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            atualizarListaNomes();
+        });
+    </script>
+</body>
+</html>
